@@ -358,11 +358,19 @@ export const useGlobalStore = () => {
         async function asyncDeleteMarkedList() {
             let id = store.listMarkedForDeletion[0]
             if (id) {
-                let response = await api.deleteTop5ListById(id)
-                if (response.data.success) {
+                try {
+                    let response = await api.deleteTop5ListById(id)
+                    if (response.data.success) {
+                        store.loadIdNamePairs()
+                        store.hideDeleteListModal()
+                    }
+                } catch (e) {
                     store.loadIdNamePairs()
                     store.hideDeleteListModal()
                 }
+            }
+            else {
+                store.hideDeleteListModal()
             }
         }
         asyncDeleteMarkedList()
