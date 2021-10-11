@@ -2,6 +2,7 @@ import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
 import MoveItem_Transaction from '../transactions/MoveItem_Transaction'
+import ChangeItem_Transaction from '../transactions/ChangeItem_Transaction'
 export const GlobalStoreContext = createContext({})
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -21,6 +22,7 @@ export const GlobalStoreActionType = {
     CREATE_NEW_LIST: "CREATE_NEW_LIST",
     MARK_LIST_IN_EDIT_MODE: "MARK_LIST_IN_EDIT_MODE",
     NO_LONGER_EDIT: "NO_LONGER_EDIT",
+    LIST_ITEM_EDIT_CHANGE: "LIST_ITEM_EDIT_CHANGE",
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -123,6 +125,13 @@ export const useGlobalStore = () => {
                     listIdBeingEdited: undefined,
                 })
             }
+
+            case GlobalStoreActionType.LIST_ITEM_EDIT_CHANGE: {
+                return setStore({
+                    ...store,
+                    isItemEditActive: payload,
+                })
+            }
             default:
                 return store
         }
@@ -146,7 +155,6 @@ export const useGlobalStore = () => {
     store.createNewList = (list) => {
         async function asyncCreateNewList(list) {
             let response = await api.createTop5List(list)
-            console.log(response.data)
             if (response.data.success) {
                 storeReducer({
                     type: GlobalStoreActionType.CREATE_NEW_LIST,
@@ -161,6 +169,13 @@ export const useGlobalStore = () => {
             }
         }
         asyncCreateNewList(list)
+    }
+
+    store.toggleListItemEdit = (boolean) => {
+        storeReducer({
+            type: GlobalStoreActionType.LIST_ITEM_EDIT_CHANGE,
+            payload: boolean
+        })
     }
 
     // THIS FUNCTION PROCESSES CHANGING A LIST NAME
@@ -245,6 +260,14 @@ export const useGlobalStore = () => {
             }
         }
         asyncSetCurrentList(id)
+    }
+    store.addChangeItemTransaction = function (oldText, newText, index) {
+        let transaction = new ChangeItem_Transaction(store, index, oldText, newText)
+        tps.addTransaction(transaction)
+    }
+    store.changeListItemName = function (newName, position) {
+        store.currentList.items[position] = newName
+        store.updateCurrentList()
     }
     store.addMoveItemTransaction = function (start, end) {
         let transaction = new MoveItem_Transaction(store, start, end)
