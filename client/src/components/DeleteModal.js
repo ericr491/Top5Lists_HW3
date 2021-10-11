@@ -25,6 +25,7 @@ function DeleteModal() {
     let className = "modal"
 
     if (store.listMarkedForDeletion) {
+        name = store.listMarkedForDeletion[1]
         className += " is-visible"
     }
 
