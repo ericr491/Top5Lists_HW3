@@ -9,11 +9,11 @@ import { GlobalStoreContext } from '../store'
     @author McKilla Gorilla
 */
 function ListCard(props) {
+    const { idNamePair, selected } = props
     const { store } = useContext(GlobalStoreContext)
     const [editActive, setEditActive] = useState(false)
-    const [text, setText] = useState("")
+    const [text, setText] = useState(idNamePair.name)
     store.history = useHistory()
-    const { idNamePair, selected } = props
 
     function handleLoadList(event) {
         if (!event.target.disabled) {
@@ -55,6 +55,16 @@ function ListCard(props) {
         setText(event.target.value)
     }
 
+    function handleDelete(event) {
+        event.stopPropagation()
+        deleteList()
+    }
+
+    function deleteList() {
+        // DISABLE UI
+        store.markIdForDeletion(idNamePair._id)
+    }
+
     let selectClass = "unselected-list-card"
     if (selected) {
         selectClass = "selected-list-card"
@@ -81,6 +91,7 @@ function ListCard(props) {
                 id={"delete-list-" + idNamePair._id}
                 className="list-card-button"
                 value={"\u2715"}
+                onClick={handleDelete}
             />
             <input
                 disabled={cardStatus}

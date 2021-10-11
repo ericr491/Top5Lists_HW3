@@ -23,6 +23,7 @@ export const GlobalStoreActionType = {
     MARK_LIST_IN_EDIT_MODE: "MARK_LIST_IN_EDIT_MODE",
     NO_LONGER_EDIT: "NO_LONGER_EDIT",
     LIST_ITEM_EDIT_CHANGE: "LIST_ITEM_EDIT_CHANGE",
+    MARK_LIST_FOR_DELETE: "MARK_LIST_FOR_DELETE",
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -132,6 +133,14 @@ export const useGlobalStore = () => {
                     isItemEditActive: payload,
                 })
             }
+
+            case GlobalStoreActionType.MARK_LIST_FOR_DELETE: {
+                return setStore({
+                    ...store,
+                    listMarkedForDeletion: payload,
+                })
+            }
+
             default:
                 return store
         }
@@ -328,6 +337,35 @@ export const useGlobalStore = () => {
         })
     }
 
+    store.markIdForDeletion = function (id) {
+        storeReducer({
+            type: GlobalStoreActionType.MARK_LIST_FOR_DELETE,
+            payload: id,
+        })
+    }
+
+
+    store.deleteMarkedList = function () {
+        async function asyncDeleteMarkedList() {
+            let id = store.listMarkedForDeletion
+            if (id) {
+                let response = await api.deleteTop5ListById(id)
+                if (response.data.success) {
+                    store.loadIdNamePairs()
+                    store.hideDeleteListModal()
+                }
+            }
+        }
+        asyncDeleteMarkedList()
+        // AFTER DELETING RE-GET ALL THE LISTS
+    }
+
+    store.hideDeleteListModal = function () {
+        storeReducer({
+            type: GlobalStoreActionType.MARK_LIST_FOR_DELETE,
+            payload: null,
+        })
+    }
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer }
 }

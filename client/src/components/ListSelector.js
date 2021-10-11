@@ -35,7 +35,7 @@ const ListSelector = () => {
             <ListCard
                 key={pair._id}
                 idNamePair={pair}
-                selected={false}
+                selected={store.currentList && store.currentList._id === pair._id}
             />
         ))
     }
