@@ -109,8 +109,12 @@ export const useGlobalStore = () => {
             }
             // CREATE A NEW LIST + MARK IT FOR EDIT
             case GlobalStoreActionType.CREATE_NEW_LIST: {
+                const newList = store.idNamePairs.concat(payload.idNamePairs)
                 return setStore({
-                    idNamePairs: store.idNamePairs.concat(payload.idNamePairs),
+                    idNamePairs: newList.sort((keyPair1, keyPair2) => {
+                        // GET THE LISTS
+                        return keyPair1.name.localeCompare(keyPair2.name)
+                    }),
                     currentList: null,
                     newListCounter: store.newListCounter + 1,
                     isListNameEditActive: true,
@@ -201,7 +205,9 @@ export const useGlobalStore = () => {
                         async function getListPairs(top5List) {
                             response = await api.getTop5ListPairs()
                             if (response.data.success) {
-                                let pairsArray = response.data.idNamePairs
+                                let pairsArray = response.data.idNamePairs.sort((keyPair1, keyPair2) => {
+                                    return keyPair1.name.localeCompare(keyPair2.name)
+                                })
                                 storeReducer({
                                     type: GlobalStoreActionType.CHANGE_LIST_NAME,
                                     payload: {
@@ -226,6 +232,7 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
         })
+        tps.clearAllTransactions()
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
@@ -233,7 +240,9 @@ export const useGlobalStore = () => {
         async function asyncLoadIdNamePairs() {
             const response = await api.getTop5ListPairs()
             if (response.data.success) {
-                let pairsArray = response.data.idNamePairs
+                let pairsArray = response.data.idNamePairs.sort((keyPair1, keyPair2) => {
+                    return keyPair1.name.localeCompare(keyPair2.name)
+                })
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                     payload: pairsArray
@@ -337,17 +346,17 @@ export const useGlobalStore = () => {
         })
     }
 
-    store.markIdForDeletion = function (id) {
+    store.markIdForDeletion = function (id, name) {
         storeReducer({
             type: GlobalStoreActionType.MARK_LIST_FOR_DELETE,
-            payload: id,
+            payload: [id, name],
         })
     }
 
 
     store.deleteMarkedList = function () {
         async function asyncDeleteMarkedList() {
-            let id = store.listMarkedForDeletion
+            let id = store.listMarkedForDeletion[0]
             if (id) {
                 let response = await api.deleteTop5ListById(id)
                 if (response.data.success) {
@@ -366,6 +375,16 @@ export const useGlobalStore = () => {
             payload: null,
         })
     }
+
+    store.hasUndo = function () {
+        return tps.hasTransactionToUndo()
+    }
+
+
+    store.hasRedo = function () {
+        return tps.hasTransactionToRedo()
+    }
+
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer }
 }

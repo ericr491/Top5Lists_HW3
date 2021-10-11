@@ -62,7 +62,7 @@ function ListCard(props) {
 
     function deleteList() {
         // DISABLE UI
-        store.markIdForDeletion(idNamePair._id)
+        store.markIdForDeletion(idNamePair._id, idNamePair.name)
     }
 
     let selectClass = "unselected-list-card"

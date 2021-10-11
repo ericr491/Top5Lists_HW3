@@ -42,7 +42,9 @@ function Top5Item(props) {
         setDraggedTo(false)
 
         // UPDATE THE LIST
-        store.addMoveItemTransaction(sourceId, targetId)
+        if (sourceId !== targetId) {
+            store.addMoveItemTransaction(sourceId, targetId)
+        }
     }
 
     let { index } = props

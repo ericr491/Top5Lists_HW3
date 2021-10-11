@@ -41,15 +41,26 @@ const ListSelector = () => {
     }
     return (
         <div id="top5-list-selector">
-            <div id="list-selector-heading">
-                <input
-                    type="button"
-                    id="add-list-button"
-                    className="top5-button"
-                    onClick={createNewList}
-                    value="+" />
-                Your Lists
-            </div>
+            {store.isListNameEditActive ? (
+                <div id="list-selector-heading">
+                    <input
+                        type="button"
+                        id="add-list-button"
+                        className="top5-button"
+                        style={{ opacity: 0.35 }}
+                        value="+" />
+                    Your Lists
+                </div>) :
+                (<div id="list-selector-heading">
+                    <input
+                        type="button"
+                        id="add-list-button"
+                        className="top5-button"
+                        onClick={createNewList}
+                        value="+" />
+                    Your Lists
+                </div>)
+            }
             <div id="list-selector-list">
                 {
                     listCard
