@@ -89,6 +89,23 @@ function Top5Item(props) {
                 defaultValue={props.text || ""}
             />
         )
+    } else if (store.isItemEditActive) {
+        return (
+            <div
+                id={'item-' + (index + 1)}
+                className={itemClass}
+                draggable="false"
+            >
+                <input
+                    type="button"
+                    id={"edit-item-" + index + 1}
+                    className="list-card-button"
+                    value={"\u270E"}
+                    disabled="true"
+                    style={{ opacity: 0.35 }}
+                />
+                {props.text}
+            </div>)
     } else {
         return (
             <div
