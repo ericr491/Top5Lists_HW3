@@ -238,18 +238,27 @@ export const useGlobalStore = () => {
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
     store.loadIdNamePairs = function () {
         async function asyncLoadIdNamePairs() {
-            const response = await api.getTop5ListPairs()
-            if (response.data.success) {
-                let pairsArray = response.data.idNamePairs.sort((keyPair1, keyPair2) => {
-                    return keyPair1.name.localeCompare(keyPair2.name)
-                })
+            try {
+                const response = await api.getTop5ListPairs()
+                if (response.data.success) {
+                    let pairsArray = response.data.idNamePairs.sort((keyPair1, keyPair2) => {
+                        return keyPair1.name.localeCompare(keyPair2.name)
+                    })
+                    storeReducer({
+                        type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                        payload: pairsArray
+                    })
+                }
+                else {
+                    console.log("API FAILED TO GET THE LIST PAIRS")
+                }
+            } catch (e) {
+                // WHEN IS DB EMPTY
+                console.log("API FAILED TO GET THE LIST PAIRS")
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
-                    payload: pairsArray
+                    payload: []
                 })
-            }
-            else {
-                console.log("API FAILED TO GET THE LIST PAIRS")
             }
         }
         asyncLoadIdNamePairs()

@@ -80,7 +80,7 @@ function Top5Item(props) {
 
     const handleOnBlur = (event) => {
         event.preventDefault()
-        toggleEdit()
+        setTimeout(toggleEdit, 100)
     }
 
     if (editActive) {
