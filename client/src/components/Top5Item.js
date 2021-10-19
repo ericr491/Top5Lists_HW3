@@ -78,15 +78,22 @@ function Top5Item(props) {
         setText(event.target.value)
     }
 
+    const handleOnBlur = (event) => {
+        event.preventDefault()
+        toggleEdit()
+    }
+
     if (editActive) {
         return (
             <input
+                autoFocus={true}
                 id={"edit-item-" + index + 1}
                 type='text'
                 className={itemClass}
                 onKeyPress={handleEditKeyPress}
                 onChange={handleUpdate}
                 defaultValue={props.text || ""}
+                onBlur={handleOnBlur}
             />
         )
     } else if (store.isItemEditActive) {
@@ -94,14 +101,14 @@ function Top5Item(props) {
             <div
                 id={'item-' + (index + 1)}
                 className={itemClass}
-                draggable="false"
+                draggable={false}
             >
                 <input
                     type="button"
                     id={"edit-item-" + index + 1}
                     className="list-card-button"
                     value={"\u270E"}
-                    disabled="true"
+                    disabled={true}
                     style={{ opacity: 0.35 }}
                 />
                 {props.text}
@@ -116,7 +123,7 @@ function Top5Item(props) {
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                draggable="true"
+                draggable={true}
             >
                 <input
                     type="button"

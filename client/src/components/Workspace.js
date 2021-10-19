@@ -9,24 +9,26 @@ import { GlobalStoreContext } from '../store'
     @author McKilla Gorilla
 */
 function Workspace() {
-    const { store } = useContext(GlobalStoreContext);
-    store.history = useHistory();
+    const { store } = useContext(GlobalStoreContext)
+    store.history = useHistory()
 
-    let editItems = "";
+    let editItems = ""
     if (store.currentList) {
-        editItems = 
+        editItems =
             <div id="edit-items">
                 {
                     store.currentList.items.map((item, index) => (
-                        <Top5Item 
-                            id={'top5-item-' + (index+1)}
-                            key={'top5-item-' + (index+1)}
+                        <Top5Item
+                            id={'top5-item-' + (index + 1)}
+                            key={'top5-item-' + (index + 1)}
                             text={item}
-                            index={index} 
+                            index={index}
                         />
                     ))
                 }
-            </div>;
+            </div>
+    } else {
+        store.history.push('/')
     }
     return (
         <div id="top5-workspace">
@@ -44,4 +46,4 @@ function Workspace() {
     )
 }
 
-export default Workspace;
+export default Workspace
